@@ -1,0 +1,40 @@
+pipeline {
+    agent any  .
+
+    environment {
+        // Define the name of the Docker image
+        DOCKER_IMAGE = "vijay537/my-java-app:v1"
+    }
+
+    stages {
+        // This stage checks out the code from GitHub
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/your-username/your-repository.git'
+            }
+        }
+
+        // This stage builds the Docker image using the Dockerfile
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build the Docker image with the tag $DOCKER_IMAGE
+                    sh 'docker build -t $DOCKER_IMAGE .'
+                }
+            }
+        }
+
+        // This stage pushes the Docker image to Docker Hub
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    // Login to Docker Hub (you’ll add your credentials in Jenkins later)
+                    sh 'docker login -u $DOCKER_USER -p $DOCKER_PASSWORD'
+                    
+                    // Push the Docker image to Docker Hub
+                    sh 'docker push $DOCKER_IMAGE'
+                }
+            }
+        }
+    }
+}
