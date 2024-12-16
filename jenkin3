@@ -10,7 +10,7 @@ pipeline {
         // This stage checks out the code from GitHub
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/your-username/your-repository.git'
+                git branch: 'main', url: 'https://github.com/Vijay-hash-12/helloworld_sample.git'
             }
         }
 
@@ -28,11 +28,14 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    // Login to Docker Hub (you’ll add your credentials in Jenkins later)
-                    sh 'docker login -u $DOCKER_USER -p $DOCKER_PASSWORD'
-                    
-                    // Push the Docker image to Docker Hub
-                    sh 'docker push $DOCKER_IMAGE'
+                    // Use Jenkins credentials (Docker Hub username and password)
+                    withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        // Log in to Docker Hub using the username and password from Jenkins
+                        sh 'docker login -u $DOCKER_USER -p $DOCKER_PASSWORD'
+                        
+                        // Push the Docker image to Docker Hub
+                        sh 'docker push $DOCKER_IMAGE'
+                    }
                 }
             }
         }
